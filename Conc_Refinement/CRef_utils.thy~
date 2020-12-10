@@ -1,0 +1,15 @@
+theory CRef_utils
+imports Main CRef
+begin
+
+lemma "r \<subseteq> in_rel (R\<^sup>*) \<alpha> \<Longrightarrow> Sta\<^sub>s \<alpha> (r, R)\<^sub>\<alpha>"
+definition reach_end::"('g\<times>'l,'p,'f,'e) body \<Rightarrow> (('g,'l) c_state) rel1 \<Rightarrow> ('g,'l) c_state set  \<Rightarrow> 
+                      ('g\<times>'l,'p,'f,'e) com \<Rightarrow> ('g,'l) c_state \<Rightarrow> ('g,'l) c_state set"
+  where "reach_end \<Gamma> R p c s \<equiv> {s'.  (\<exists>c \<in> (cp\<^sub>e \<Gamma> c s \<inter> assum(p, R)). snd(last (snd c)) = s') }"
+
+lemma use_sim:
+   "\<lbrakk>(\<Gamma>\<^sub>c,C,R\<^sub>c,G\<^sub>c) \<succeq>\<^sub>(\<^sub>\<alpha>\<^sub>;\<^sub>\<xi>\<^sub>\<rhd>\<^sub>\<gamma>\<^sub>n\<^sub>;\<^sub>\<gamma>\<^sub>a\<^sub>) (\<Gamma>\<^sub>s,S,R\<^sub>s,G\<^sub>s);t\<^sub>c \<in> reach_end \<Gamma>\<^sub>s R\<^sub>c P\<^sub>c C s\<^sub>c ; 
+     t\<^sub>s \<in> reach_end \<Gamma>\<^sub>s R\<^sub>s P\<^sub>s S s\<^sub>s; P\<^sub>c \<subseteq> Domain \<xi> ; P\<^sub>s \<subseteq> Range \<xi>; Sta\<^sub>s \<alpha> (R\<^sub>c, R\<^sub>s\<^sup>*)\<^sub>\<alpha>\<rbrakk> \<Longrightarrow>  True"
+
+  
+end

@@ -1,0 +1,31 @@
+\begin{thebibliography}{1}
+
+\bibitem{Cock08}
+David Cock.
+\newblock Bitfields and tagged unions in {C}: Verification through automatic
+  generation.
+\newblock In Bernhard Beckert and Gerwin Klein, editors, {\em Proc, 5th
+  VERIFY}, volume 372 of {\em {CEUR} Workshop Proceedings}, pages 44--55,
+  Sydney, Australia, August 2008.
+
+\bibitem{Harrison:TPHOLs2005:Euclidean-Space}
+John Harrison.
+\newblock A {HOL} theory of {Euclidean} space.
+\newblock In Joe Hurd and T.~Melham, editors, {\em Theorem Proving in Higher
+  Order Logics, 18th International Conference}, volume 3603 of {\em Lecture
+  Notes in Computer Science}, pages 114--129. Springer, 2005.
+
+\bibitem{norrish98}
+Michael Norrish.
+\newblock {\em {C} Formalised in {HOL}}.
+\newblock PhD thesis, Computer Laboratory, University of Cambridge, 1998.
+\newblock Also published as Technical Report 453, available from
+  \url{http://www.cl.cam.ac.uk/TechReports/UCAM-CL-TR-453.pdf}.
+
+\bibitem{Tuch:phd}
+Harvey Tuch.
+\newblock {\em Formal Memory Models for Verifying {C} Systems Code}.
+\newblock {PhD} thesis, School of Computer Science and Engineering, University
+  of NSW, Sydney 2052, Australia, Aug 2008.
+
+\end{thebibliography}

@@ -1,0 +1,42 @@
+lemma mod_state_only_spec_basic_tau_sound1:
+  assumes a0:"C1 = Basic fc \<tau> \<or> C1 = Spec rc \<tau>" and   
+ a1:"(\<sigma>, \<Sigma>) \<in> \<xi>" and 
+ a2: "\<Gamma>\<^sub>c\<turnstile>\<^sub>c\<^sub>e (LanguageCon.com.Seq C1 C2, (\<sigma>g,\<sigma>l)) \<rightarrow> (c\<^sub>c', (\<sigma>g',\<sigma>l'))" and 
+ a3:"(\<forall>\<sigma>n. \<sigma>' \<noteq> Normal \<sigma>n)" and 
+ a4:"\<forall>\<sigma> \<sigma>' \<Sigma> . (\<sigma>, \<Sigma>)\<in>\<xi> \<and> \<sigma>' \<in> com_step  C1 (Normal \<sigma>)  \<Gamma>\<^sub>c  \<longrightarrow> 
+                (\<exists>\<sigma>n'. \<sigma>' = Normal \<sigma>n' \<and> (\<sigma>n',\<Sigma>)\<in>\<xi>\<^sub>1 \<and> (Normal \<sigma>, Normal \<sigma>n') \<in> G\<^sub>c)"
+shows "\<exists>\<Sigma>'. (\<sigma>', \<Sigma>') \<in> \<alpha>\<^sub>x \<and>
+             (\<exists>c\<^sub>s'. (\<Gamma>\<^sub>s\<turnstile>\<^sub>c (S, Normal \<Sigma>) \<rightarrow>\<^sub>\<tau>\<^sup>* (c\<^sub>s', \<Sigma>') \<or>
+                      (\<exists>v. e = Some v \<and>
+                           (\<exists>a b. \<Gamma>\<^sub>s\<turnstile>\<^sub>c (S, Normal \<Sigma>) \<rightarrow>\<^sub>\<tau>\<^sup>* (a, b) \<and>
+                                  (\<exists>aa ba. \<Gamma>\<^sub>s\<turnstile>\<^sub>c\<^sub>Some v (a, b) \<rightarrow> (aa, ba) \<and>
+                                           \<Gamma>\<^sub>s\<turnstile>\<^sub>c (aa, ba) \<rightarrow>\<^sub>\<tau>\<^sup>* (c\<^sub>s', \<Sigma>'))))) \<and> (Normal \<sigma>,\<sigma>')\<in> G\<^sub>c \<and>
+                     (\<Gamma>\<^sub>c,(c\<^sub>c', \<sigma>'),R\<^sub>c,G\<^sub>c) \<succeq>\<^sub>(\<^sub>\<alpha>\<^sub>;\<^sub>\<gamma>\<^sub>n\<^sub>;\<^sub>\<gamma>\<^sub>a\<^sub>) (\<Gamma>\<^sub>s,(c\<^sub>s', \<Sigma>'),R\<^sub>s,G\<^sub>s))"
+proof-
+  {
+    assume a00:"C1 = Basic fc \<tau>"    
+    then have "\<sigma>' = Normal (fc \<sigma>)" using a2 
+      by (metis LanguageCon.com.simps(12) LanguageCon.com.simps(48) Pair_inject stepc_Normal_elim_cases(3) stepc_Normal_elim_cases(5) stepce_stepc)     
+    then have ?thesis using a3 by auto
+  }
+  moreover {
+    assume a00:"C1 = Spec rc \<tau>"   
+    then have e:"e=\<tau>"  using a2 label_step by fastforce
+    have c\<^sub>c':"c\<^sub>c' = Seq Skip C2" using stepc_elim_cases1(5)[OF a2[simplified a00]]
+    proof -
+      obtain cc xx where
+        f1: "(c\<^sub>c', \<sigma>') = (LanguageCon.com.Seq cc C2, xx) \<and> 
+            \<Gamma>\<^sub>c\<turnstile>\<^sub>c\<^sub>e (LanguageCon.com.Spec rc \<tau>, Normal \<sigma>) \<rightarrow> (cc, xx)"
+        using stepc_elim_cases1(5)[OF a2[simplified a00]]  by force
+      thus ?thesis
+        using stepc_elim_cases1(4) by fastforce
+    qed       
+    moreover have step:"\<Gamma>\<^sub>c\<turnstile>\<^sub>c\<^sub>\<tau> (Spec rc \<tau>, Normal \<sigma>) \<rightarrow> (Skip, \<sigma>')"
+     using  stepc_elim_cases(6)[OF a2[simplified a00 c\<^sub>c'], simplified e] by auto    
+    moreover have \<sigma>:"\<sigma>' = Stuck" using stepc_elim_cases1(4)[OF step] a3     
+      by fastforce
+    moreover  have "(\<nexists>sn.(\<sigma>, sn)\<in>rc)" using stepc_elim_cases(3)[OF step[simplified \<sigma>]] by auto
+    moreover have "\<sigma>' \<in> com_step  C1 (Normal \<sigma>)  \<Gamma>\<^sub>c " using calculation a00 by auto
+    ultimately have ?thesis using a4 a00 a1 \<sigma> by fast
+  } ultimately show ?thesis using a0 by auto  
+qed

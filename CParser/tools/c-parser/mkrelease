@@ -1,0 +1,208 @@
+#!/bin/bash
+#
+# Copyright 2014, NICTA
+#
+# This software may be distributed and modified according to the terms of
+# the BSD 2-Clause license. Note that NO WARRANTY is provided.
+# See "LICENSE_BSD2.txt" for details.
+#
+# @TAG(NICTA_BSD)
+#
+#
+# Generate a standalone tarball of the C parser.
+#
+
+set -e
+
+case $(uname) in
+  Darwin* ) TAR=gnutar ; SEDIOPT="-i ''" ;;
+  * ) TAR=tar ; SEDIOPT=-i ;;
+esac
+
+
+warn ()
+{
+  echo "$1" >&2
+}
+
+die ()
+{
+  echo "$1" >&2
+  echo "Fatal error"
+  exit 1
+}
+
+if [ $# -ne 1 ]
+then
+    echo "Usage:" >&2
+    die "  $0 tag" >&2
+fi
+
+# Get the directory that this script is running in.
+CPARSER_DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
+TOPLEVEL_DIR=$( git -C ${CPARSER_DIR} rev-parse --show-toplevel)
+RELEASE_ARCHS='ARM ARM_HYP X64'
+pushd "${TOPLEVEL_DIR}"
+
+# Ensure that our working directory is clean.
+if git status --porcelain | grep -q -v '^??' ; then
+    if [[ -v ALLOW_DIRTY ]]; then
+        warn "WARNING: Dirty working tree."
+    else
+        warn "ERROR: Dirty working tree. Set the environment vairable ALLOW_DIRTY to ignore."
+        exit 1
+    fi
+fi
+
+# Create working directories.
+tmpdir=$(mktemp -d)
+outputdir=$tmpdir/c-parser
+echo "Outputs being placed in \"${outputdir}\"."
+
+# Parse command line arguments.
+tag=$1
+stem=c-parser-$tag
+shift
+
+[ -a "$stem" ] && die "Directory $stem already exists."
+
+safemakedir ()
+{
+    if [ ! -d "$1" ]
+    then
+        warn "Creating $1"
+        mkdir -p "$1"
+    else
+        warn "WARNING: release will be merged with existing $1 directory"
+    fi
+}
+safemakedir "$outputdir/src/lib"
+safemakedir "$outputdir/src/c-parser"
+safemakedir "$outputdir/doc"
+
+
+echo "Tarring standard sources"
+# Some testfiles have non-ASCII filenames, so we need git ls-files -z. Ugh.
+git -C "${TOPLEVEL_DIR}" ls-files -z | tr '\0' '\n' |
+    grep ^tools/c-parser |
+    grep -v tools/c-parser/notes |
+    grep -v tools/c-parser/mkrelease |
+   tar -v -T - -c -f - -l |
+  (cd "$outputdir/src" ; tar xf -)
+
+echo "Getting theory dependencies"
+CPARSER_DEPS=$(tempfile)
+for ARCH in $RELEASE_ARCHS; do
+    L4V_ARCH=$ARCH misc/scripts/thydeps -I ./isabelle -d . -b . -r CParser
+done |
+    sort -u >"$CPARSER_DEPS"
+
+if grep -q -vE '^(lib/|tools/c-parser/)' "$CPARSER_DEPS"; then
+    echo >&2 'unexpected dependencies outside lib/ and tools/c-parser/:'
+    grep >&2 -vE '^(lib/|tools/c-parser/)' "$CPARSER_DEPS"
+    exit 1
+fi
+
+echo "Copying misc files"
+grep '^lib/' "$CPARSER_DEPS" |
+    xargs '-d\n' cp -v --parents -t "$outputdir/src"
+
+# other misc files
+cp -v --parents -t "$outputdir/src" \
+   lib/Word_Lib/ROOT
+
+echo "Creating ROOTS file"
+cat >"$outputdir/src/ROOTS" <<EOF
+lib/Word_Lib
+c-parser
+EOF
+
+echo "Rearranging directories"
+/bin/mv -v "$outputdir/src/tools/c-parser/README.md" "$outputdir"
+/bin/mv -v "$outputdir/src/tools/c-parser" "$outputdir/src/"
+rmdir "$outputdir/src/tools"
+
+echo "Removing files"
+/bin/rm -v "$outputdir/src/c-parser/testfiles/many_local_vars".{c,thy}
+
+echo "Executing gen_isabelle_root to generate testfiles/\$L4V_ARCH/ROOT."
+for L4V_ARCH in $RELEASE_ARCHS; do
+    python misc/scripts/gen_isabelle_root.py -i "$outputdir/src/c-parser/testfiles" -i "$outputdir/src/c-parser/testfiles/${L4V_ARCH}" -o "$outputdir/src/c-parser/testfiles/$L4V_ARCH/ROOT" -s CParserTest -b CParser ||
+        die "gen_isabelle_root failed."
+done
+
+echo "Executing gen_isabelle_root to generate testfiles/all_tests_\$L4V_ARCH.thy."
+for L4V_ARCH in $RELEASE_ARCHS; do
+    python misc/scripts/gen_isabelle_root.py -T -o "$outputdir/src/c-parser/all_tests_${L4V_ARCH}.thy" -b CParser -i "$outputdir/src/c-parser/testfiles" -i "$outputdir/src/c-parser/testfiles/${L4V_ARCH}" ||
+        die "gen_isabelle_root failed."
+done
+
+echo "Hacking Makefile to remove ROOT generation."
+if ! grep -q '^testfiles/\$(L4V_ARCH)/ROOT' "$outputdir/src/c-parser/Makefile"; then
+    die "failed to process c-parser/Makefile"
+fi
+sed $SEDIOPT \
+    -e '/^testfiles\/\$(L4V_ARCH)\/ROOT/,/CParserTest/d' \
+    -e '/^all_tests_\$(L4V_ARCH)\.thy/,/CParser/d' \
+    "$outputdir/src/c-parser/Makefile"
+
+echo "Hacking Makefile to change root dir."
+if ! grep -q '^L4V_ROOT_DIR = ' "$outputdir/src/c-parser/Makefile"; then
+    die "failed to process c-parser/Makefile"
+fi
+sed $SEDIOPT \
+    -e 's/^L4V_ROOT_DIR = .*$/L4V_ROOT_DIR = ../' \
+    "$outputdir/src/c-parser/Makefile"
+
+echo "Generating standalone-parser/table.ML"
+pushd "$TOPLEVEL_DIR/tools/c-parser" > /dev/null
+"$TOPLEVEL_DIR/isabelle/bin/isabelle" env make -f Makefile "$(pwd)/standalone-parser/table.ML" \
+    || die "Couldn't generate table.ML for standalone parser"
+cp standalone-parser/table.ML "$outputdir/src/c-parser/standalone-parser"
+echo "Cleaning up standalone-parser's Makefile"
+sed '
+  1i\
+  SML_COMPILER ?= mlton
+  /^include/d
+  /General\/table.ML/,/pretty-printing/d
+  /ISABELLE_HOME/d
+  /CLEAN_TARGETS/s|\$(STP_PFX)/table.ML||
+' < standalone-parser/Makefile > "$outputdir/src/c-parser/standalone-parser/Makefile"
+popd > /dev/null
+
+
+echo "Making PDF of ctranslation file."
+cd "$outputdir/src/c-parser/doc"
+make ctranslation.pdf > /dev/null
+/bin/rm ctranslation.{log,aux,blg,bbl,toc}
+mv ctranslation.pdf "$outputdir/doc"
+
+popd > /dev/null
+
+lookforlicense=$(find "$outputdir" \! -name '*.lex.sml' \! -name '*.grm.sml' \! -type d -exec grep -q @LICENSE \{\} \; -print)
+if [ -n "$lookforlicense" ]
+then
+    die "### @LICENSE detected in file(s) $lookforlicense"
+else
+    echo "No @LICENSEs remain unexpanded - good."
+fi
+
+lookformichaeln=$(find "$outputdir" \! -name RELEASES \! -type d -exec grep -q /michaeln \{\} \; -print)
+if [ -n "$lookformichaeln" ]
+then
+    die "### /michaeln detected in file(s) $lookformichaeln"
+else
+    echo "No occurrences of \"/michaeln\" - good."
+fi
+
+echo -n "Compressing into $stem.tar.gz: "
+mv "$tmpdir/c-parser" "$tmpdir/$stem"
+
+pushd "$tmpdir"
+"$TAR" --owner=nobody --group=nogroup -cvzf "${stem}.tar.gz" "$stem" |
+    while read ; do echo -n "." ; done
+popd
+/bin/mv -f -v "$tmpdir/${stem}.tar.gz" .
+
+echo
+echo Done.

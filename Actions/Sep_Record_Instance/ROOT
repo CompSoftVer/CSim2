@@ -1,0 +1,6 @@
+chapter Separation_Record
+
+session "Sep_Record" (AFP) = "Separata" +
+theories Auto_sep_record
+
+

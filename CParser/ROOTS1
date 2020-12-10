@@ -1,0 +1,11 @@
+#
+# Paths to "ROOT" files associated with L4.verified
+#
+spec
+proof
+tools
+camkes
+sys-init
+lib
+lib/Word_Lib
+lib/sep_algebra

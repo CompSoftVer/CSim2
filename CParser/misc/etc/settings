@@ -1,0 +1,35 @@
+#
+# Copyright 2014, NICTA
+#
+# This software may be distributed and modified according to the terms of
+# the BSD 2-Clause license. Note that NO WARRANTY is provided.
+# See "LICENSE_BSD2.txt" for details.
+#
+# @TAG(NICTA_BSD)
+#
+
+# --- L4.verified repository settings ---
+
+# Setup components.
+init_components "$USER_HOME/.isabelle/contrib" "$ISABELLE_HOME/Admin/components/main"
+init_components "$USER_HOME/.isabelle/contrib" "$ISABELLE_HOME/Admin/components/bundled"
+
+# 64 bit setup for large C proofs:
+if [ -n "$ML_HOME" ]
+then
+  ML_OPTIONS="-H 2000"
+  ML_PLATFORM="$ISABELLE_PLATFORM64"
+  ML_HOME="$(dirname ${ML_HOME})/$ML_PLATFORM"
+fi
+
+# increased memory settings for large builds
+ISABELLE_BUILD_JAVA_OPTIONS="-Xms2048m -Xmx6096m -Xss4m"
+JEDIT_JAVA_OPTIONS="-Xms128m -Xmx4096m -Xss4m"
+
+# show brackets in jEdit
+ISABELLE_JEDIT_OPTIONS="-m brackets"
+
+# Everyone most likely wants ARM
+: ${L4V_ARCH:="ARM"}
+
+# --- end L4.verified repository settings ---

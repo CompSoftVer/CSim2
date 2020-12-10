@@ -1,0 +1,231 @@
+theory Strong_CRef
+imports Main "CRef" 
+begin
+
+
+coinductive "RGSimStrong"::"[('g\<times>'l,'p,'f,'e) body,('g,'l,'p,'f,'e) config_p, (('g,'l) c_state) rel1, 
+                           (('g,'l) c_state) rel1,
+                     (('g,'l) c_state,('g1,'l1) c_state) rel,
+                     (('g,'l) c_state,('g1,'l1) c_state) rel,
+                     (('g,'l) c_state,('g1,'l1) c_state)  rel,
+                     ('g1\<times>'l1,'p,'f,'e) body,('g1,'l1,'p,'f,'e) config_p, (('g1,'l1) c_state) rel1, 
+                            (('g1,'l1) c_state) rel1
+                    ] \<Rightarrow> bool" 
+("'(_,_,_,_')/ \<succeq>\<^sub>s\<^sub>'(\<^sub>_\<^sub>;\<^sub>_\<^sub>;\<^sub>_\<^sub>')/ '(_,_,_,_')" [81,81,81,81,81,81,81,81,81,81,81] 100)
+where
+  srgsim: "\<lbrakk>(((\<sigma>g,\<sigma>l),\<sigma>ls),((\<Sigma>g, \<Sigma>l), \<Sigma>ls))\<in>\<alpha>;                    
+           \<forall>c\<^sub>c' \<sigma>g' \<sigma>l'. \<Gamma>\<^sub>c\<turnstile>\<^sub>c\<^sub>\<tau> (c\<^sub>c,(\<sigma>g,\<sigma>l)) \<rightarrow> (c\<^sub>c', (\<sigma>g',\<sigma>l'))  \<longrightarrow> 
+             (\<exists>c\<^sub>s' \<Sigma>g' \<Sigma>l'.  \<Gamma>\<^sub>s\<turnstile>\<^sub>c (c\<^sub>s, (\<Sigma>g, \<Sigma>l)) \<rightarrow>\<^sub>\<tau>\<^sup>* (c\<^sub>s', (\<Sigma>g', \<Sigma>l'))) \<and> 
+             (\<forall>c\<^sub>s' \<Sigma>g' \<Sigma>l'.  \<Gamma>\<^sub>s\<turnstile>\<^sub>c (c\<^sub>s, (\<Sigma>g, \<Sigma>l)) \<rightarrow>\<^sub>\<tau>\<^sup>* (c\<^sub>s', (\<Sigma>g', \<Sigma>l')) \<longrightarrow>
+                (((\<sigma>g',\<sigma>l'),\<sigma>ls),((\<Sigma>g', \<Sigma>l'), \<Sigma>ls))\<in>\<alpha> \<and> 
+                ((((\<sigma>g,\<sigma>l),\<sigma>ls),((\<sigma>g',\<sigma>l'),\<sigma>ls)),
+                  (((\<Sigma>g, \<Sigma>l), \<Sigma>ls),((\<Sigma>g', \<Sigma>l'), \<Sigma>ls))) \<in> ((G\<^sub>c,G\<^sub>s\<^sup>*)\<^sub>\<alpha>) \<and>
+                (\<Gamma>\<^sub>c,(c\<^sub>c', ((\<sigma>g',\<sigma>l'),\<sigma>ls)),R\<^sub>c,G\<^sub>c) \<succeq>\<^sub>s\<^sub>(\<^sub>\<alpha>\<^sub>;\<^sub>\<gamma>\<^sub>q\<^sub>;\<^sub>\<gamma>\<^sub>a\<^sub>) (\<Gamma>\<^sub>s,(c\<^sub>s', ((\<Sigma>g', \<Sigma>l'), \<Sigma>ls)),R\<^sub>s,G\<^sub>s)) ;           
+           \<forall>v c\<^sub>c' \<sigma>g' \<sigma>l' e. e=Some v \<and> \<Gamma>\<^sub>c\<turnstile>\<^sub>c\<^sub>e (c\<^sub>c, (\<sigma>g,\<sigma>l)) \<rightarrow> (c\<^sub>c', (\<sigma>g',\<sigma>l'))  \<longrightarrow> 
+             (\<exists> c\<^sub>s' \<Sigma>g' \<Sigma>l'. \<Gamma>\<^sub>s\<turnstile>\<^sub>c\<^sub>v (c\<^sub>s,(\<Sigma>g, \<Sigma>l)) \<rightarrow>\<^sup>+  (c\<^sub>s', (\<Sigma>g', \<Sigma>l'))) \<and>
+             (\<forall> c\<^sub>s' \<Sigma>g' \<Sigma>l'. \<Gamma>\<^sub>s\<turnstile>\<^sub>c\<^sub>v (c\<^sub>s,(\<Sigma>g, \<Sigma>l)) \<rightarrow>\<^sup>+  (c\<^sub>s', (\<Sigma>g', \<Sigma>l')) \<longrightarrow> 
+               (((\<sigma>g',\<sigma>l'),\<sigma>ls),((\<Sigma>g', \<Sigma>l'), \<Sigma>ls))\<in>\<alpha> \<and> 
+               (((((\<sigma>g,\<sigma>l),\<sigma>ls),((\<sigma>g',\<sigma>l'),\<sigma>ls)),
+                 (((\<Sigma>g, \<Sigma>l), \<Sigma>ls),((\<Sigma>g', \<Sigma>l'), \<Sigma>ls))) \<in> (G\<^sub>c,G\<^sub>s\<^sup>*)\<^sub>\<alpha>) \<and>  
+               (\<Gamma>\<^sub>c,(c\<^sub>c', ((\<sigma>g',\<sigma>l'),\<sigma>ls)),R\<^sub>c,G\<^sub>c) \<succeq>\<^sub>s\<^sub>(\<^sub>\<alpha>\<^sub>;\<^sub>\<gamma>\<^sub>q\<^sub>;\<^sub>\<gamma>\<^sub>a\<^sub>) (\<Gamma>\<^sub>s,(c\<^sub>s', ((\<Sigma>g', \<Sigma>l'), \<Sigma>ls)),R\<^sub>s,G\<^sub>s)) ;          
+           \<forall>\<sigma>g' \<sigma>l' \<sigma>ls' \<Sigma>g' \<Sigma>l'  \<Sigma>ls'. 
+             ((((\<sigma>g,\<sigma>l),\<sigma>ls),((\<sigma>g',\<sigma>l'),\<sigma>ls')),
+               (((\<Sigma>g, \<Sigma>l), \<Sigma>ls),((\<Sigma>g', \<Sigma>l'), \<Sigma>ls'))) \<in> ((R\<^sub>c,R\<^sub>s\<^sup>*)\<^sub>\<alpha>)  \<longrightarrow> 
+             (\<Gamma>\<^sub>c,(c\<^sub>c, ((\<sigma>g',\<sigma>l'),\<sigma>ls')),R\<^sub>c,G\<^sub>c) \<succeq>\<^sub>s\<^sub>(\<^sub>\<alpha>\<^sub>;\<^sub>\<gamma>\<^sub>q\<^sub>;\<^sub>\<gamma>\<^sub>a\<^sub>) (\<Gamma>\<^sub>s,(c\<^sub>s, ((\<Sigma>g', \<Sigma>l'), \<Sigma>ls')),R\<^sub>s,G\<^sub>s);           
+           c\<^sub>c = Skip \<longrightarrow> 
+             (\<exists>\<Sigma>g' \<Sigma>l'. \<Gamma>\<^sub>s\<turnstile>\<^sub>c (c\<^sub>s,(\<Sigma>g, \<Sigma>l)) \<rightarrow>\<^sub>\<tau>\<^sup>* (Skip, (\<Sigma>g', \<Sigma>l'))) \<and>
+               (\<forall>\<Sigma>g' \<Sigma>l'. \<Gamma>\<^sub>s\<turnstile>\<^sub>c (c\<^sub>s,(\<Sigma>g, \<Sigma>l)) \<rightarrow>\<^sub>\<tau>\<^sup>* (Skip, (\<Sigma>g', \<Sigma>l')) \<longrightarrow>
+             ((((\<sigma>g,\<sigma>l),\<sigma>ls),((\<sigma>g,\<sigma>l),\<sigma>ls)),  (((\<Sigma>g, \<Sigma>l), \<Sigma>ls),((\<Sigma>g', \<Sigma>l'), \<Sigma>ls))) \<in> ((G\<^sub>c,G\<^sub>s\<^sup>*)\<^sub>\<alpha>) \<and> 
+               (((\<sigma>g,\<sigma>l),\<sigma>ls), ((\<Sigma>g', \<Sigma>l'), \<Sigma>ls))\<in>\<gamma>\<^sub>q \<and> \<gamma>\<^sub>q\<subseteq>\<alpha>);           
+           c\<^sub>c = Throw \<longrightarrow> 
+             (\<exists>\<Sigma>g' \<Sigma>l'. \<Gamma>\<^sub>s\<turnstile>\<^sub>c (c\<^sub>s,(\<Sigma>g, \<Sigma>l)) \<rightarrow>\<^sub>\<tau>\<^sup>* (Throw, (\<Sigma>g', \<Sigma>l'))) \<and>
+             (\<forall>\<Sigma>g' \<Sigma>l'. \<Gamma>\<^sub>s\<turnstile>\<^sub>c (c\<^sub>s,(\<Sigma>g, \<Sigma>l)) \<rightarrow>\<^sub>\<tau>\<^sup>* (Throw, (\<Sigma>g', \<Sigma>l')) \<longrightarrow>
+             ((((\<sigma>g,\<sigma>l),\<sigma>ls),((\<sigma>g,\<sigma>l),\<sigma>ls)), (((\<Sigma>g, \<Sigma>l), \<Sigma>ls),((\<Sigma>g', \<Sigma>l'), \<Sigma>ls))) \<in> ((G\<^sub>c,G\<^sub>s\<^sup>*)\<^sub>\<alpha>) \<and> 
+               (((\<sigma>g,\<sigma>l),\<sigma>ls), ((\<Sigma>g', \<Sigma>l'), \<Sigma>ls))\<in>\<gamma>\<^sub>a \<and> \<gamma>\<^sub>a\<subseteq>\<alpha>);
+           \<forall>f. c\<^sub>c = Fault f  \<longrightarrow> 
+             (\<exists>\<Sigma>g' \<Sigma>l'. \<Gamma>\<^sub>s\<turnstile>\<^sub>c (c\<^sub>s,(\<Sigma>g, \<Sigma>l)) \<rightarrow>\<^sub>\<tau>\<^sup>* (Fault f, (\<Sigma>g', \<Sigma>l'))) \<and> 
+               (\<forall>\<Sigma>g' \<Sigma>l'. \<Gamma>\<^sub>s\<turnstile>\<^sub>c (c\<^sub>s,(\<Sigma>g, \<Sigma>l)) \<rightarrow>\<^sub>\<tau>\<^sup>* (Fault f, (\<Sigma>g', \<Sigma>l')) \<longrightarrow> 
+             ((((\<sigma>g,\<sigma>l),\<sigma>ls),((\<sigma>g,\<sigma>l),\<sigma>ls)), (((\<Sigma>g, \<Sigma>l), \<Sigma>ls),((\<Sigma>g', \<Sigma>l'), \<Sigma>ls))) \<in> ((G\<^sub>c,G\<^sub>s\<^sup>*)\<^sub>\<alpha>) \<and> 
+               (((\<sigma>g,\<sigma>l),\<sigma>ls), ((\<Sigma>g', \<Sigma>l'), \<Sigma>ls))\<in>\<alpha>);
+           c\<^sub>c = Stuck  \<longrightarrow> 
+             (\<exists>\<Sigma>g' \<Sigma>l'. \<Gamma>\<^sub>s\<turnstile>\<^sub>c (c\<^sub>s,(\<Sigma>g, \<Sigma>l)) \<rightarrow>\<^sub>\<tau>\<^sup>* (Stuck, (\<Sigma>g', \<Sigma>l'))) \<and> 
+               (\<forall>\<Sigma>g' \<Sigma>l'. \<Gamma>\<^sub>s\<turnstile>\<^sub>c (c\<^sub>s,(\<Sigma>g, \<Sigma>l)) \<rightarrow>\<^sub>\<tau>\<^sup>* (Stuck, (\<Sigma>g', \<Sigma>l')) \<longrightarrow> 
+             ((((\<sigma>g,\<sigma>l),\<sigma>ls),((\<sigma>g,\<sigma>l),\<sigma>ls)), (((\<Sigma>g, \<Sigma>l), \<Sigma>ls),((\<Sigma>g', \<Sigma>l'), \<Sigma>ls))) \<in> ((G\<^sub>c,G\<^sub>s\<^sup>*)\<^sub>\<alpha>) \<and> 
+               (((\<sigma>g,\<sigma>l),\<sigma>ls), ((\<Sigma>g', \<Sigma>l'), \<Sigma>ls))\<in>\<alpha>)
+          \<rbrakk> \<Longrightarrow> (\<Gamma>\<^sub>c,(c\<^sub>c, ((\<sigma>g,\<sigma>l),\<sigma>ls)),R\<^sub>c,G\<^sub>c) \<succeq>\<^sub>s\<^sub>(\<^sub>\<alpha>\<^sub>;\<^sub>\<gamma>\<^sub>q\<^sub>;\<^sub>\<gamma>\<^sub>a\<^sub>) (\<Gamma>\<^sub>s,(c\<^sub>s, ((\<Sigma>g, \<Sigma>l), \<Sigma>ls)),R\<^sub>s,G\<^sub>s)"
+    
+inductive_cases s_sim_elim_cases:
+  "(\<Gamma>\<^sub>c,(c,((\<sigma>g,\<sigma>l),\<sigma>ls)),R\<^sub>c,G\<^sub>c) \<succeq>\<^sub>s\<^sub>(\<^sub>\<alpha>\<^sub>;\<^sub>\<gamma>\<^sub>n\<^sub>;\<^sub>\<gamma>\<^sub>a\<^sub>) (\<Gamma>\<^sub>s,(c',((\<Sigma>g, \<Sigma>l), \<Sigma>ls)),R\<^sub>s,G\<^sub>s)" 
+ 
+ 
+inductive_cases s_sim_elim_cases_c[split_format (complete)]:
+  "(\<Gamma>\<^sub>c,(Skip,((\<sigma>g,\<sigma>l),\<sigma>ls)),R\<^sub>c,G\<^sub>c) \<succeq>\<^sub>s\<^sub>(\<^sub>\<alpha>\<^sub>;\<^sub>\<gamma>\<^sub>n\<^sub>;\<^sub>\<gamma>\<^sub>a\<^sub>) (\<Gamma>\<^sub>s,(c',((\<Sigma>g, \<Sigma>l), \<Sigma>ls)),R\<^sub>s,G\<^sub>s)"  
+  "(\<Gamma>\<^sub>c,(Throw, ((\<sigma>g,\<sigma>l),\<sigma>ls)),R\<^sub>c,G\<^sub>c) \<succeq>\<^sub>s\<^sub>(\<^sub>\<alpha>\<^sub>;\<^sub>\<gamma>\<^sub>n\<^sub>;\<^sub>\<gamma>\<^sub>a\<^sub>) (\<Gamma>\<^sub>s,(c',((\<Sigma>g, \<Sigma>l), \<Sigma>ls)),R\<^sub>s,G\<^sub>s)"        
+  "(\<Gamma>\<^sub>c,(Fault f, ((\<sigma>g,\<sigma>l),\<sigma>ls)),R\<^sub>c,G\<^sub>c) \<succeq>\<^sub>s\<^sub>(\<^sub>\<alpha>\<^sub>;\<^sub>\<gamma>\<^sub>n\<^sub>;\<^sub>\<gamma>\<^sub>a\<^sub>) (\<Gamma>\<^sub>s,(c',((\<Sigma>g, \<Sigma>l), \<Sigma>ls)),R\<^sub>s,G\<^sub>s)"        
+  "(\<Gamma>\<^sub>c,(Stuck, ((\<sigma>g,\<sigma>l),\<sigma>ls)),R\<^sub>c,G\<^sub>c) \<succeq>\<^sub>s\<^sub>(\<^sub>\<alpha>\<^sub>;\<^sub>\<gamma>\<^sub>n\<^sub>;\<^sub>\<gamma>\<^sub>a\<^sub>) (\<Gamma>\<^sub>s,(c',((\<Sigma>g, \<Sigma>l), \<Sigma>ls)),R\<^sub>s,G\<^sub>s)"
+
+lemma dest_s_sim_ev_step:
+  "(\<Gamma>\<^sub>c,(c\<^sub>c,((\<sigma>g,\<sigma>l),\<sigma>ls)),R\<^sub>c,G\<^sub>c) \<succeq>\<^sub>s\<^sub>(\<^sub>\<alpha>\<^sub>;\<^sub>\<gamma>\<^sub>q\<^sub>;\<^sub>\<gamma>\<^sub>a\<^sub>) (\<Gamma>\<^sub>s,(c\<^sub>s,((\<Sigma>g, \<Sigma>l), \<Sigma>ls)),R\<^sub>s,G\<^sub>s) \<Longrightarrow>
+    \<Gamma>\<^sub>c\<turnstile>\<^sub>c\<^sub>(Some v) (c\<^sub>c, (\<sigma>g,\<sigma>l)) \<rightarrow> (c\<^sub>c', (\<sigma>g',\<sigma>l')) \<Longrightarrow> 
+    (\<exists> c\<^sub>s' \<Sigma>g' \<Sigma>l'. \<Gamma>\<^sub>s\<turnstile>\<^sub>c\<^sub>v (c\<^sub>s,(\<Sigma>g, \<Sigma>l)) \<rightarrow>\<^sup>+  (c\<^sub>s', (\<Sigma>g', \<Sigma>l'))) \<and>
+    (\<forall> c\<^sub>s' \<Sigma>g' \<Sigma>l'. \<Gamma>\<^sub>s\<turnstile>\<^sub>c\<^sub>v (c\<^sub>s,(\<Sigma>g, \<Sigma>l)) \<rightarrow>\<^sup>+  (c\<^sub>s', (\<Sigma>g', \<Sigma>l')) \<longrightarrow>
+        (((\<sigma>g',\<sigma>l'),\<sigma>ls),((\<Sigma>g', \<Sigma>l'), \<Sigma>ls))\<in>\<alpha> \<and> 
+        ((((\<sigma>g,\<sigma>l),\<sigma>ls),((\<sigma>g',\<sigma>l'),\<sigma>ls)),
+          (((\<Sigma>g, \<Sigma>l), \<Sigma>ls),((\<Sigma>g', \<Sigma>l'), \<Sigma>ls))) \<in> ((G\<^sub>c,G\<^sub>s\<^sup>*)\<^sub>\<alpha>) \<and>
+        (\<Gamma>\<^sub>c,(c\<^sub>c', ((\<sigma>g',\<sigma>l'),\<sigma>ls)),R\<^sub>c,G\<^sub>c) \<succeq>\<^sub>s\<^sub>(\<^sub>\<alpha>\<^sub>;\<^sub>\<gamma>\<^sub>q\<^sub>;\<^sub>\<gamma>\<^sub>a\<^sub>) (\<Gamma>\<^sub>s,(c\<^sub>s', ((\<Sigma>g', \<Sigma>l'), \<Sigma>ls)),R\<^sub>s,G\<^sub>s))"  
+  apply (erule s_sim_elim_cases)
+  by auto
+
+lemma dest_s_sim_ev_step':
+  "(\<Gamma>\<^sub>c,(c\<^sub>c,((\<sigma>g,\<sigma>l),\<sigma>ls)),R\<^sub>c,G\<^sub>c) \<succeq>\<^sub>s\<^sub>(\<^sub>\<alpha>\<^sub>;\<^sub>\<gamma>\<^sub>q\<^sub>;\<^sub>\<gamma>\<^sub>a\<^sub>) (\<Gamma>\<^sub>s,(c\<^sub>s,((\<Sigma>g, \<Sigma>l), \<Sigma>ls)),R\<^sub>s,G\<^sub>s) \<Longrightarrow>
+    \<Gamma>\<^sub>c\<turnstile>\<^sub>c\<^sub>(Some v) (c\<^sub>c, (\<sigma>g,\<sigma>l)) \<rightarrow> (c\<^sub>c', (\<sigma>g',\<sigma>l')) \<Longrightarrow> 
+    (\<exists> c\<^sub>s' \<Sigma>g' \<Sigma>l'. \<Gamma>\<^sub>s\<turnstile>\<^sub>c\<^sub>v (c\<^sub>s,(\<Sigma>g, \<Sigma>l)) \<rightarrow>\<^sup>+  (c\<^sub>s', (\<Sigma>g', \<Sigma>l')) \<and>    
+        (((\<sigma>g',\<sigma>l'),\<sigma>ls),((\<Sigma>g', \<Sigma>l'), \<Sigma>ls))\<in>\<alpha> \<and> 
+        ((((\<sigma>g,\<sigma>l),\<sigma>ls),((\<sigma>g',\<sigma>l'),\<sigma>ls)),
+          (((\<Sigma>g, \<Sigma>l), \<Sigma>ls),((\<Sigma>g', \<Sigma>l'), \<Sigma>ls))) \<in> ((G\<^sub>c,G\<^sub>s\<^sup>*)\<^sub>\<alpha>) \<and>
+        (\<Gamma>\<^sub>c,(c\<^sub>c', ((\<sigma>g',\<sigma>l'),\<sigma>ls)),R\<^sub>c,G\<^sub>c) \<succeq>\<^sub>s\<^sub>(\<^sub>\<alpha>\<^sub>;\<^sub>\<gamma>\<^sub>q\<^sub>;\<^sub>\<gamma>\<^sub>a\<^sub>) (\<Gamma>\<^sub>s,(c\<^sub>s', ((\<Sigma>g', \<Sigma>l'), \<Sigma>ls)),R\<^sub>s,G\<^sub>s))"  
+  using dest_s_sim_ev_step by fast
+  
+ 
+lemma dest_s_sim_ev_step1:
+  "(\<Gamma>\<^sub>c,(c\<^sub>c,((\<sigma>g,\<sigma>l),\<sigma>ls)),R\<^sub>c,G\<^sub>c) \<succeq>\<^sub>s\<^sub>(\<^sub>\<alpha>\<^sub>;\<^sub>\<gamma>\<^sub>q\<^sub>;\<^sub>\<gamma>\<^sub>a\<^sub>) (\<Gamma>\<^sub>s,(c\<^sub>s,((\<Sigma>g, \<Sigma>l), \<Sigma>ls)),R\<^sub>s,G\<^sub>s) \<Longrightarrow>
+    \<Gamma>\<^sub>c\<turnstile>\<^sub>c\<^sub>(Some v) (c\<^sub>c, (\<sigma>g,\<sigma>l)) \<rightarrow> (c\<^sub>c', (\<sigma>g',\<sigma>l')) \<longrightarrow> 
+    (\<exists> c\<^sub>s' \<Sigma>g' \<Sigma>l'. \<Gamma>\<^sub>s\<turnstile>\<^sub>c\<^sub>v (c\<^sub>s,(\<Sigma>g, \<Sigma>l)) \<rightarrow>\<^sup>+  (c\<^sub>s', (\<Sigma>g', \<Sigma>l'))) \<and>
+    (\<forall> c\<^sub>s' \<Sigma>g' \<Sigma>l'. \<Gamma>\<^sub>s\<turnstile>\<^sub>c\<^sub>v (c\<^sub>s,(\<Sigma>g, \<Sigma>l)) \<rightarrow>\<^sup>+  (c\<^sub>s', (\<Sigma>g', \<Sigma>l')) \<longrightarrow>
+        (((\<sigma>g',\<sigma>l'),\<sigma>ls),((\<Sigma>g', \<Sigma>l'), \<Sigma>ls))\<in>\<alpha> \<and> 
+        ((((\<sigma>g,\<sigma>l),\<sigma>ls),((\<sigma>g',\<sigma>l'),\<sigma>ls)),
+          (((\<Sigma>g, \<Sigma>l), \<Sigma>ls),((\<Sigma>g', \<Sigma>l'), \<Sigma>ls))) \<in> ((G\<^sub>c,G\<^sub>s\<^sup>*)\<^sub>\<alpha>) \<and>
+        (\<Gamma>\<^sub>c,(c\<^sub>c', ((\<sigma>g',\<sigma>l'),\<sigma>ls)),R\<^sub>c,G\<^sub>c) \<succeq>\<^sub>s\<^sub>(\<^sub>\<alpha>\<^sub>;\<^sub>\<gamma>\<^sub>q\<^sub>;\<^sub>\<gamma>\<^sub>a\<^sub>) (\<Gamma>\<^sub>s,(c\<^sub>s', ((\<Sigma>g', \<Sigma>l'), \<Sigma>ls)),R\<^sub>s,G\<^sub>s))"  
+  by (erule s_sim_elim_cases, auto)
+
+lemma dest_s_sim_ev_step1':
+  "(\<Gamma>\<^sub>c,(c\<^sub>c,((\<sigma>g,\<sigma>l),\<sigma>ls)),R\<^sub>c,G\<^sub>c) \<succeq>\<^sub>s\<^sub>(\<^sub>\<alpha>\<^sub>;\<^sub>\<gamma>\<^sub>q\<^sub>;\<^sub>\<gamma>\<^sub>a\<^sub>) (\<Gamma>\<^sub>s,(c\<^sub>s,((\<Sigma>g, \<Sigma>l), \<Sigma>ls)),R\<^sub>s,G\<^sub>s) \<Longrightarrow>
+    \<Gamma>\<^sub>c\<turnstile>\<^sub>c\<^sub>(Some v) (c\<^sub>c, (\<sigma>g,\<sigma>l)) \<rightarrow> (c\<^sub>c', (\<sigma>g',\<sigma>l')) \<longrightarrow> 
+    (\<exists> c\<^sub>s' \<Sigma>g' \<Sigma>l'. \<Gamma>\<^sub>s\<turnstile>\<^sub>c\<^sub>v (c\<^sub>s,(\<Sigma>g, \<Sigma>l)) \<rightarrow>\<^sup>+  (c\<^sub>s', (\<Sigma>g', \<Sigma>l')) \<and>    
+        (((\<sigma>g',\<sigma>l'),\<sigma>ls),((\<Sigma>g', \<Sigma>l'), \<Sigma>ls))\<in>\<alpha> \<and> 
+        ((((\<sigma>g,\<sigma>l),\<sigma>ls),((\<sigma>g',\<sigma>l'),\<sigma>ls)),
+          (((\<Sigma>g, \<Sigma>l), \<Sigma>ls),((\<Sigma>g', \<Sigma>l'), \<Sigma>ls))) \<in> ((G\<^sub>c,G\<^sub>s\<^sup>*)\<^sub>\<alpha>) \<and>
+        (\<Gamma>\<^sub>c,(c\<^sub>c', ((\<sigma>g',\<sigma>l'),\<sigma>ls)),R\<^sub>c,G\<^sub>c) \<succeq>\<^sub>s\<^sub>(\<^sub>\<alpha>\<^sub>;\<^sub>\<gamma>\<^sub>q\<^sub>;\<^sub>\<gamma>\<^sub>a\<^sub>) (\<Gamma>\<^sub>s,(c\<^sub>s', ((\<Sigma>g', \<Sigma>l'), \<Sigma>ls)),R\<^sub>s,G\<^sub>s))"  
+  using dest_s_sim_ev_step1 by fast
+
+   
+lemma dest_s_sim_tau_step:
+  "(\<Gamma>\<^sub>c,(c\<^sub>c,((\<sigma>g,\<sigma>l),\<sigma>ls)),R\<^sub>c,G\<^sub>c) \<succeq>\<^sub>s\<^sub>(\<^sub>\<alpha>\<^sub>;\<^sub>\<gamma>\<^sub>q\<^sub>;\<^sub>\<gamma>\<^sub>a\<^sub>) (\<Gamma>\<^sub>s,(c\<^sub>s,((\<Sigma>g, \<Sigma>l), \<Sigma>ls)),R\<^sub>s,G\<^sub>s) \<Longrightarrow>
+    \<Gamma>\<^sub>c\<turnstile>\<^sub>c\<^sub>\<tau> (c\<^sub>c, (\<sigma>g,\<sigma>l)) \<rightarrow> (c\<^sub>c', (\<sigma>g',\<sigma>l')) \<Longrightarrow> 
+    (\<exists> c\<^sub>s' \<Sigma>g' \<Sigma>l'. \<Gamma>\<^sub>s\<turnstile>\<^sub>c (c\<^sub>s,(\<Sigma>g, \<Sigma>l)) \<rightarrow>\<^sub>\<tau>\<^sup>*  (c\<^sub>s', (\<Sigma>g', \<Sigma>l'))) \<and>
+    (\<forall> c\<^sub>s' \<Sigma>g' \<Sigma>l'. \<Gamma>\<^sub>s\<turnstile>\<^sub>c (c\<^sub>s,(\<Sigma>g, \<Sigma>l)) \<rightarrow>\<^sub>\<tau>\<^sup>*  (c\<^sub>s', (\<Sigma>g', \<Sigma>l')) \<longrightarrow>
+        (((\<sigma>g',\<sigma>l'),\<sigma>ls),((\<Sigma>g', \<Sigma>l'), \<Sigma>ls))\<in>\<alpha> \<and> 
+        ((((\<sigma>g,\<sigma>l),\<sigma>ls),((\<sigma>g',\<sigma>l'),\<sigma>ls)),
+          (((\<Sigma>g, \<Sigma>l), \<Sigma>ls),((\<Sigma>g', \<Sigma>l'), \<Sigma>ls))) \<in> ((G\<^sub>c,G\<^sub>s\<^sup>*)\<^sub>\<alpha>) \<and>
+        (\<Gamma>\<^sub>c,(c\<^sub>c', ((\<sigma>g',\<sigma>l'),\<sigma>ls)),R\<^sub>c,G\<^sub>c) \<succeq>\<^sub>s\<^sub>(\<^sub>\<alpha>\<^sub>;\<^sub>\<gamma>\<^sub>q\<^sub>;\<^sub>\<gamma>\<^sub>a\<^sub>) (\<Gamma>\<^sub>s,(c\<^sub>s', ((\<Sigma>g', \<Sigma>l'), \<Sigma>ls)),R\<^sub>s,G\<^sub>s))"
+  by (erule s_sim_elim_cases, force)
+
+lemma dest_s_sim_tau_step':
+  "(\<Gamma>\<^sub>c,(c\<^sub>c,((\<sigma>g,\<sigma>l),\<sigma>ls)),R\<^sub>c,G\<^sub>c) \<succeq>\<^sub>s\<^sub>(\<^sub>\<alpha>\<^sub>;\<^sub>\<gamma>\<^sub>q\<^sub>;\<^sub>\<gamma>\<^sub>a\<^sub>) (\<Gamma>\<^sub>s,(c\<^sub>s,((\<Sigma>g, \<Sigma>l), \<Sigma>ls)),R\<^sub>s,G\<^sub>s) \<Longrightarrow>
+    \<Gamma>\<^sub>c\<turnstile>\<^sub>c\<^sub>\<tau> (c\<^sub>c, (\<sigma>g,\<sigma>l)) \<rightarrow> (c\<^sub>c', (\<sigma>g',\<sigma>l')) \<Longrightarrow> 
+    (\<exists> c\<^sub>s' \<Sigma>g' \<Sigma>l'. \<Gamma>\<^sub>s\<turnstile>\<^sub>c (c\<^sub>s,(\<Sigma>g, \<Sigma>l)) \<rightarrow>\<^sub>\<tau>\<^sup>*  (c\<^sub>s', (\<Sigma>g', \<Sigma>l')) \<and>
+    (((\<sigma>g',\<sigma>l'),\<sigma>ls),((\<Sigma>g', \<Sigma>l'), \<Sigma>ls))\<in>\<alpha> \<and> 
+    ((((\<sigma>g,\<sigma>l),\<sigma>ls),((\<sigma>g',\<sigma>l'),\<sigma>ls)),
+      (((\<Sigma>g, \<Sigma>l), \<Sigma>ls),((\<Sigma>g', \<Sigma>l'), \<Sigma>ls))) \<in> ((G\<^sub>c,G\<^sub>s\<^sup>*)\<^sub>\<alpha>) \<and>
+    (\<Gamma>\<^sub>c,(c\<^sub>c', ((\<sigma>g',\<sigma>l'),\<sigma>ls)),R\<^sub>c,G\<^sub>c) \<succeq>\<^sub>s\<^sub>(\<^sub>\<alpha>\<^sub>;\<^sub>\<gamma>\<^sub>q\<^sub>;\<^sub>\<gamma>\<^sub>a\<^sub>) (\<Gamma>\<^sub>s,(c\<^sub>s', ((\<Sigma>g', \<Sigma>l'), \<Sigma>ls)),R\<^sub>s,G\<^sub>s))"
+  using dest_s_sim_tau_step by fast
+
+lemma dest_s_sim_env_step:  
+  "(\<Gamma>\<^sub>c,(c\<^sub>c,((\<sigma>g,\<sigma>l),\<sigma>ls)),R\<^sub>c,G\<^sub>c) \<succeq>\<^sub>s\<^sub>(\<^sub>\<alpha>\<^sub>;\<^sub>\<gamma>\<^sub>q\<^sub>;\<^sub>\<gamma>\<^sub>a\<^sub>) (\<Gamma>\<^sub>s,(c\<^sub>s,((\<Sigma>g, \<Sigma>l), \<Sigma>ls)),R\<^sub>s,G\<^sub>s) \<Longrightarrow>
+   ((((\<sigma>g,\<sigma>l),\<sigma>ls),((\<sigma>g',\<sigma>l'),\<sigma>ls')),
+          (((\<Sigma>g, \<Sigma>l), \<Sigma>ls),((\<Sigma>g', \<Sigma>l'), \<Sigma>ls'))) \<in> ((R\<^sub>c,R\<^sub>s\<^sup>*)\<^sub>\<alpha>) \<Longrightarrow>
+    (\<Gamma>\<^sub>c,(c\<^sub>c, ((\<sigma>g',\<sigma>l'),\<sigma>ls')),R\<^sub>c,G\<^sub>c) \<succeq>\<^sub>s\<^sub>(\<^sub>\<alpha>\<^sub>;\<^sub>\<gamma>\<^sub>q\<^sub>;\<^sub>\<gamma>\<^sub>a\<^sub>) (\<Gamma>\<^sub>s,(c\<^sub>s, ((\<Sigma>g', \<Sigma>l'), \<Sigma>ls')),R\<^sub>s,G\<^sub>s)"  
+  by (erule s_sim_elim_cases, auto)
+  
+ lemma dest_s_sim_alpha:  
+ "(\<Gamma>\<^sub>c,(c\<^sub>c,((\<sigma>g,\<sigma>l),\<sigma>ls)),R\<^sub>c,G\<^sub>c) \<succeq>\<^sub>s\<^sub>(\<^sub>\<alpha>\<^sub>;\<^sub>\<gamma>\<^sub>q\<^sub>;\<^sub>\<gamma>\<^sub>a\<^sub>) (\<Gamma>\<^sub>s,(c\<^sub>s,((\<Sigma>g, \<Sigma>l), \<Sigma>ls)),R\<^sub>s,G\<^sub>s) \<Longrightarrow>
+   (((\<sigma>g,\<sigma>l),\<sigma>ls),((\<Sigma>g, \<Sigma>l), \<Sigma>ls))  \<in> \<alpha>" 
+   by (erule s_sim_elim_cases,auto)
+
+lemma dest_s_final_skip:
+"(\<Gamma>\<^sub>c,(Skip,((\<sigma>g,\<sigma>l),\<sigma>ls)),R\<^sub>c,G\<^sub>c) \<succeq>\<^sub>s\<^sub>(\<^sub>\<alpha>\<^sub>;\<^sub>\<gamma>\<^sub>q\<^sub>;\<^sub>\<gamma>\<^sub>a\<^sub>) (\<Gamma>\<^sub>s,(c\<^sub>s,((\<Sigma>g, \<Sigma>l), \<Sigma>ls)),R\<^sub>s,G\<^sub>s) \<Longrightarrow>
+ (\<exists>\<Sigma>g' \<Sigma>l'. \<Gamma>\<^sub>s\<turnstile>\<^sub>c (c\<^sub>s,(\<Sigma>g, \<Sigma>l)) \<rightarrow>\<^sub>\<tau>\<^sup>* (Skip, (\<Sigma>g', \<Sigma>l'))) \<and>
+  (\<forall>\<Sigma>g' \<Sigma>l'. \<Gamma>\<^sub>s\<turnstile>\<^sub>c (c\<^sub>s,(\<Sigma>g, \<Sigma>l)) \<rightarrow>\<^sub>\<tau>\<^sup>* (Skip, (\<Sigma>g', \<Sigma>l')) \<longrightarrow>
+ ((((\<sigma>g,\<sigma>l),\<sigma>ls),((\<sigma>g,\<sigma>l),\<sigma>ls)),  (((\<Sigma>g, \<Sigma>l), \<Sigma>ls),((\<Sigma>g', \<Sigma>l'), \<Sigma>ls))) \<in> ((G\<^sub>c,G\<^sub>s\<^sup>*)\<^sub>\<alpha>) \<and> 
+   (((\<sigma>g,\<sigma>l),\<sigma>ls), ((\<Sigma>g', \<Sigma>l'), \<Sigma>ls))\<in>\<gamma>\<^sub>q \<and> \<gamma>\<^sub>q\<subseteq>\<alpha>)"
+  by (erule s_sim_elim_cases,auto)
+
+lemma dest_s_final_skip':
+"(\<Gamma>\<^sub>c,(Skip,((\<sigma>g,\<sigma>l),\<sigma>ls)),R\<^sub>c,G\<^sub>c) \<succeq>\<^sub>s\<^sub>(\<^sub>\<alpha>\<^sub>;\<^sub>\<gamma>\<^sub>q\<^sub>;\<^sub>\<gamma>\<^sub>a\<^sub>) (\<Gamma>\<^sub>s,(c\<^sub>s,((\<Sigma>g, \<Sigma>l), \<Sigma>ls)),R\<^sub>s,G\<^sub>s) \<Longrightarrow>
+ (\<exists>\<Sigma>g' \<Sigma>l'. \<Gamma>\<^sub>s\<turnstile>\<^sub>c (c\<^sub>s,(\<Sigma>g, \<Sigma>l)) \<rightarrow>\<^sub>\<tau>\<^sup>* (Skip, (\<Sigma>g', \<Sigma>l')) \<and> 
+ ((((\<sigma>g,\<sigma>l),\<sigma>ls),((\<sigma>g,\<sigma>l),\<sigma>ls)),  (((\<Sigma>g, \<Sigma>l), \<Sigma>ls),((\<Sigma>g', \<Sigma>l'), \<Sigma>ls))) \<in> ((G\<^sub>c,G\<^sub>s\<^sup>*)\<^sub>\<alpha>) \<and> 
+   (((\<sigma>g,\<sigma>l),\<sigma>ls), ((\<Sigma>g', \<Sigma>l'), \<Sigma>ls))\<in>\<gamma>\<^sub>q \<and> \<gamma>\<^sub>q\<subseteq>\<alpha>)"
+  using dest_s_final_skip by fast
+
+lemma dest_s_final_Throw:
+"(\<Gamma>\<^sub>c,(Throw,((\<sigma>g,\<sigma>l),\<sigma>ls)),R\<^sub>c,G\<^sub>c) \<succeq>\<^sub>s\<^sub>(\<^sub>\<alpha>\<^sub>;\<^sub>\<gamma>\<^sub>q\<^sub>;\<^sub>\<gamma>\<^sub>a\<^sub>) (\<Gamma>\<^sub>s,(c\<^sub>s,((\<Sigma>g, \<Sigma>l), \<Sigma>ls)),R\<^sub>s,G\<^sub>s) \<Longrightarrow>
+ (\<exists>\<Sigma>g' \<Sigma>l'. \<Gamma>\<^sub>s\<turnstile>\<^sub>c (c\<^sub>s,(\<Sigma>g, \<Sigma>l)) \<rightarrow>\<^sub>\<tau>\<^sup>* (Throw, (\<Sigma>g', \<Sigma>l'))) \<and>
+ (\<forall>\<Sigma>g' \<Sigma>l'. \<Gamma>\<^sub>s\<turnstile>\<^sub>c (c\<^sub>s,(\<Sigma>g, \<Sigma>l)) \<rightarrow>\<^sub>\<tau>\<^sup>* (Throw, (\<Sigma>g', \<Sigma>l')) \<longrightarrow>
+ ((((\<sigma>g,\<sigma>l),\<sigma>ls),((\<sigma>g,\<sigma>l),\<sigma>ls)), (((\<Sigma>g, \<Sigma>l), \<Sigma>ls),((\<Sigma>g', \<Sigma>l'), \<Sigma>ls))) \<in> ((G\<^sub>c,G\<^sub>s\<^sup>*)\<^sub>\<alpha>) \<and> 
+ (((\<sigma>g,\<sigma>l),\<sigma>ls), ((\<Sigma>g', \<Sigma>l'), \<Sigma>ls))\<in>\<gamma>\<^sub>a \<and> \<gamma>\<^sub>a\<subseteq>\<alpha>)"
+  by (erule s_sim_elim_cases,auto)
+
+lemma dest_s_final_Throw':
+"(\<Gamma>\<^sub>c,(Throw,((\<sigma>g,\<sigma>l),\<sigma>ls)),R\<^sub>c,G\<^sub>c) \<succeq>\<^sub>s\<^sub>(\<^sub>\<alpha>\<^sub>;\<^sub>\<gamma>\<^sub>q\<^sub>;\<^sub>\<gamma>\<^sub>a\<^sub>) (\<Gamma>\<^sub>s,(c\<^sub>s,((\<Sigma>g, \<Sigma>l), \<Sigma>ls)),R\<^sub>s,G\<^sub>s) \<Longrightarrow>
+ (\<exists>\<Sigma>g' \<Sigma>l'. \<Gamma>\<^sub>s\<turnstile>\<^sub>c (c\<^sub>s,(\<Sigma>g, \<Sigma>l)) \<rightarrow>\<^sub>\<tau>\<^sup>* (Throw, (\<Sigma>g', \<Sigma>l')) \<and>
+ ((((\<sigma>g,\<sigma>l),\<sigma>ls),((\<sigma>g,\<sigma>l),\<sigma>ls)), (((\<Sigma>g, \<Sigma>l), \<Sigma>ls),((\<Sigma>g', \<Sigma>l'), \<Sigma>ls))) \<in> ((G\<^sub>c,G\<^sub>s\<^sup>*)\<^sub>\<alpha>) \<and> 
+ (((\<sigma>g,\<sigma>l),\<sigma>ls), ((\<Sigma>g', \<Sigma>l'), \<Sigma>ls))\<in>\<gamma>\<^sub>a \<and> \<gamma>\<^sub>a\<subseteq>\<alpha>)"
+  using dest_s_final_Throw by fast
+
+lemma dest_s_final_Fault:
+"(\<Gamma>\<^sub>c,(Fault f,((\<sigma>g,\<sigma>l),\<sigma>ls)),R\<^sub>c,G\<^sub>c) \<succeq>\<^sub>s\<^sub>(\<^sub>\<alpha>\<^sub>;\<^sub>\<gamma>\<^sub>q\<^sub>;\<^sub>\<gamma>\<^sub>a\<^sub>) (\<Gamma>\<^sub>s,(c\<^sub>s,((\<Sigma>g, \<Sigma>l), \<Sigma>ls)),R\<^sub>s,G\<^sub>s) \<Longrightarrow>
+ (\<exists>\<Sigma>g' \<Sigma>l'. \<Gamma>\<^sub>s\<turnstile>\<^sub>c (c\<^sub>s,(\<Sigma>g, \<Sigma>l)) \<rightarrow>\<^sub>\<tau>\<^sup>* (Fault f, (\<Sigma>g', \<Sigma>l'))) \<and> 
+               (\<forall>\<Sigma>g' \<Sigma>l'. \<Gamma>\<^sub>s\<turnstile>\<^sub>c (c\<^sub>s,(\<Sigma>g, \<Sigma>l)) \<rightarrow>\<^sub>\<tau>\<^sup>* (Fault f, (\<Sigma>g', \<Sigma>l')) \<longrightarrow> 
+             ((((\<sigma>g,\<sigma>l),\<sigma>ls),((\<sigma>g,\<sigma>l),\<sigma>ls)), (((\<Sigma>g, \<Sigma>l), \<Sigma>ls),((\<Sigma>g', \<Sigma>l'), \<Sigma>ls))) \<in> ((G\<^sub>c,G\<^sub>s\<^sup>*)\<^sub>\<alpha>) \<and> 
+               (((\<sigma>g,\<sigma>l),\<sigma>ls), ((\<Sigma>g', \<Sigma>l'), \<Sigma>ls))\<in>\<alpha>)"
+  by (erule s_sim_elim_cases, auto)
+
+lemma dest_s_final_Fault':
+"(\<Gamma>\<^sub>c,(Fault f,((\<sigma>g,\<sigma>l),\<sigma>ls)),R\<^sub>c,G\<^sub>c) \<succeq>\<^sub>s\<^sub>(\<^sub>\<alpha>\<^sub>;\<^sub>\<gamma>\<^sub>q\<^sub>;\<^sub>\<gamma>\<^sub>a\<^sub>) (\<Gamma>\<^sub>s,(c\<^sub>s,((\<Sigma>g, \<Sigma>l), \<Sigma>ls)),R\<^sub>s,G\<^sub>s) \<Longrightarrow>
+ (\<exists>\<Sigma>g' \<Sigma>l'. \<Gamma>\<^sub>s\<turnstile>\<^sub>c (c\<^sub>s,(\<Sigma>g, \<Sigma>l)) \<rightarrow>\<^sub>\<tau>\<^sup>* (Fault f, (\<Sigma>g', \<Sigma>l')) \<and>
+ ((((\<sigma>g,\<sigma>l),\<sigma>ls),((\<sigma>g,\<sigma>l),\<sigma>ls)), (((\<Sigma>g, \<Sigma>l), \<Sigma>ls),((\<Sigma>g', \<Sigma>l'), \<Sigma>ls))) \<in> ((G\<^sub>c,G\<^sub>s\<^sup>*)\<^sub>\<alpha>) \<and> 
+   (((\<sigma>g,\<sigma>l),\<sigma>ls), ((\<Sigma>g', \<Sigma>l'), \<Sigma>ls))\<in>\<alpha>)"
+  using dest_s_final_Fault by fast
+
+
+lemma dest_s_final_Stuck:
+"(\<Gamma>\<^sub>c,(Stuck,((\<sigma>g,\<sigma>l),\<sigma>ls)),R\<^sub>c,G\<^sub>c) \<succeq>\<^sub>s\<^sub>(\<^sub>\<alpha>\<^sub>;\<^sub>\<gamma>\<^sub>q\<^sub>;\<^sub>\<gamma>\<^sub>a\<^sub>) (\<Gamma>\<^sub>s,(c\<^sub>s,((\<Sigma>g, \<Sigma>l), \<Sigma>ls)),R\<^sub>s,G\<^sub>s) \<Longrightarrow>
+ (\<exists>\<Sigma>g' \<Sigma>l'. \<Gamma>\<^sub>s\<turnstile>\<^sub>c (c\<^sub>s,(\<Sigma>g, \<Sigma>l)) \<rightarrow>\<^sub>\<tau>\<^sup>* (Stuck, (\<Sigma>g', \<Sigma>l'))) \<and> 
+ (\<forall>\<Sigma>g' \<Sigma>l'. \<Gamma>\<^sub>s\<turnstile>\<^sub>c (c\<^sub>s,(\<Sigma>g, \<Sigma>l)) \<rightarrow>\<^sub>\<tau>\<^sup>* (Stuck, (\<Sigma>g', \<Sigma>l')) \<longrightarrow> 
+ ((((\<sigma>g,\<sigma>l),\<sigma>ls),((\<sigma>g,\<sigma>l),\<sigma>ls)), (((\<Sigma>g, \<Sigma>l), \<Sigma>ls),((\<Sigma>g', \<Sigma>l'), \<Sigma>ls))) \<in> ((G\<^sub>c,G\<^sub>s\<^sup>*)\<^sub>\<alpha>) \<and> 
+ (((\<sigma>g,\<sigma>l),\<sigma>ls), ((\<Sigma>g', \<Sigma>l'), \<Sigma>ls))\<in>\<alpha>)"
+   by (erule s_sim_elim_cases, auto)
+
+lemma dest_s_final_Stuck':
+"(\<Gamma>\<^sub>c,(Stuck,((\<sigma>g,\<sigma>l),\<sigma>ls)),R\<^sub>c,G\<^sub>c) \<succeq>\<^sub>s\<^sub>(\<^sub>\<alpha>\<^sub>;\<^sub>\<gamma>\<^sub>q\<^sub>;\<^sub>\<gamma>\<^sub>a\<^sub>) (\<Gamma>\<^sub>s,(c\<^sub>s,((\<Sigma>g, \<Sigma>l), \<Sigma>ls)),R\<^sub>s,G\<^sub>s) \<Longrightarrow>
+ (\<exists>\<Sigma>g' \<Sigma>l'. \<Gamma>\<^sub>s\<turnstile>\<^sub>c (c\<^sub>s,(\<Sigma>g, \<Sigma>l)) \<rightarrow>\<^sub>\<tau>\<^sup>* (Stuck, (\<Sigma>g', \<Sigma>l')) \<and>  
+ ((((\<sigma>g,\<sigma>l),\<sigma>ls),((\<sigma>g,\<sigma>l),\<sigma>ls)), (((\<Sigma>g, \<Sigma>l), \<Sigma>ls),((\<Sigma>g', \<Sigma>l'), \<Sigma>ls))) \<in> ((G\<^sub>c,G\<^sub>s\<^sup>*)\<^sub>\<alpha>) \<and> 
+ (((\<sigma>g,\<sigma>l),\<sigma>ls), ((\<Sigma>g', \<Sigma>l'), \<Sigma>ls))\<in>\<alpha>)"
+  using dest_s_final_Stuck by fast
+
+
+lemma sim_strong_weak:"(\<Gamma>\<^sub>c,(c\<^sub>c,((\<sigma>g,\<sigma>l),\<sigma>ls)),R\<^sub>c,G\<^sub>c) \<succeq>\<^sub>s\<^sub>(\<^sub>\<alpha>\<^sub>;\<^sub>\<gamma>\<^sub>q\<^sub>;\<^sub>\<gamma>\<^sub>a\<^sub>) (\<Gamma>\<^sub>s,(c\<^sub>s,((\<Sigma>g, \<Sigma>l), \<Sigma>ls)),R\<^sub>s,G\<^sub>s) \<Longrightarrow> 
+       (\<Gamma>\<^sub>c,(c\<^sub>c,((\<sigma>g,\<sigma>l),\<sigma>ls)),R\<^sub>c,G\<^sub>c) \<succeq>\<^sub>(\<^sub>\<alpha>\<^sub>;\<^sub>\<gamma>\<^sub>q\<^sub>;\<^sub>\<gamma>\<^sub>a\<^sub>) (\<Gamma>\<^sub>s,(c\<^sub>s,((\<Sigma>g, \<Sigma>l), \<Sigma>ls)),R\<^sub>s,G\<^sub>s)"
+  apply(coinduction arbitrary: \<sigma>g \<sigma>l \<sigma>ls \<Sigma>g \<Sigma>l \<Sigma>ls c\<^sub>c c\<^sub>s, clarsimp) 
+  apply (auto simp add: toSeq_def)
+         apply (auto intro: dest_s_sim_alpha)[1]  
+        apply (fast dest: dest_s_sim_tau_step')
+       apply (drule dest_s_sim_ev_step1', fast)   
+  by (fast dest: dest_s_sim_env_step dest_s_final_skip 
+                dest_s_final_Throw dest_s_final_Fault dest_s_final_Stuck)+
+
+definition "SRGSim_pre"::  
+  "[('g\<times>'l,'p,'f,'e) body,('g \<times> 'l,'p,'f,'e)com, 
+    (('g,'l) c_state) rel1, (('g,'l) c_state) rel1,
+     (('g,'l) c_state,('g1,'l1) c_state) rel, (('g,'l) c_state,('g1,'l1) c_state) rel,
+      (('g,'l) c_state,('g1,'l1) c_state) rel,  (('g,'l) c_state,('g1,'l1) c_state) rel,
+    ('g1\<times>'l1,'p,'f,'e) body,('g1 \<times> 'l1,'p,'f,'e) com, 
+     (('g1,'l1) c_state) rel1, (('g1,'l1) c_state) rel1] \<Rightarrow> bool " 
+  ("'(_,_,_,_')/ \<succeq>\<^sub>s\<^sub>'(\<^sub>_\<^sub>;\<^sub>_\<^sub>\<rhd>\<^sub>_\<^sub>;\<^sub>_\<^sub>')/ '(_,_,_,_')" [81,81,81,81,81,81,81,81,81,81,81,81] 100)
+  where
+" (\<Gamma>\<^sub>c,c,R\<^sub>c,G\<^sub>c) \<succeq>\<^sub>s\<^sub>(\<^sub>\<alpha>\<^sub>;\<^sub>\<xi>\<^sub>\<rhd>\<^sub>\<gamma>\<^sub>n\<^sub>;\<^sub>\<gamma>\<^sub>a\<^sub>) (\<Gamma>\<^sub>s,c',R\<^sub>s,G\<^sub>s) \<equiv> 
+  \<forall>\<sigma> \<Sigma>. (\<sigma>,\<Sigma>)\<in>\<xi> \<longrightarrow> (\<Gamma>\<^sub>c,(c, \<sigma>),R\<^sub>c,G\<^sub>c) \<succeq>\<^sub>s\<^sub>(\<^sub>\<alpha>\<^sub>;\<^sub>\<gamma>\<^sub>n\<^sub>;\<^sub>\<gamma>\<^sub>a\<^sub>) (\<Gamma>\<^sub>s,(c', \<Sigma>),R\<^sub>s,G\<^sub>s)
+"
+
+  
+end

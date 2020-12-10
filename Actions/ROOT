@@ -1,0 +1,10 @@
+chapter AFP
+
+session "Actions" (AFP) = "Separata" +
+sessions "HOL-Eisbach"
+  theories 
+    ActionsSemantics
+    Sep_Prod_Instance
+
+
+

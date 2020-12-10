@@ -1,0 +1,107 @@
+#!/usr/bin/env python
+#
+#
+# Copyright 2017, CSIRO
+#
+# This software may be distributed and modified according to the terms of
+# the BSD 2-Clause license. Note that NO WARRANTY is provided.
+# See "LICENSE_BSD2.txt" for details.
+#
+# @TAG(NICTA_BSD)
+#
+
+import os
+import sys
+
+# Settings
+L4V_ARCH_DEFAULT="ARM"
+L4V_ARCH_LIST=["ARM","ARM_HYP","X64","RISCV64"]
+
+# Fetch directory this script is stored in.
+DIR=os.path.dirname(os.path.realpath(__file__))
+
+# Add repo version of Isabelle to our path.
+os.environ["PATH"] += os.pathsep + DIR
+
+# Export L4V_ARCH variable as ARM (Default)
+if not os.environ.has_key("L4V_ARCH"):
+    os.environ["L4V_ARCH"] = L4V_ARCH_DEFAULT
+
+L4V_ARCH=os.environ["L4V_ARCH"]
+
+# Test Orphanage when L4V_ARCH=ARM;
+# we need to set this flag here to test the above equality in the ROOT file.
+# To be removed when we finish proving Orphanage for ARM_HYP and X64
+if L4V_ARCH == "ARM":
+   os.environ["L4V_ARCH_IS_ARM"]= L4V_ARCH
+   print "Testing Orphanage for ARM"
+
+# Check we are using a known Architecture
+if L4V_ARCH not in L4V_ARCH_LIST:
+    sys.exit("Unknown architecture L4V_ARCH=%s" % L4V_ARCH)
+
+print "Testing for L4V_ARCH=%s:" % L4V_ARCH
+
+# enable timing logs in isabelle builds and set report interval to 3 seconds
+os.environ["ISABELLE_TIMING_LOG"]="3.0s"
+
+# Enable quick_and_dirty mode for various images
+if os.environ.has_key("QUICK_AND_DIRTY"):
+    os.environ["AINVS_QUICK_AND_DIRTY"]=1
+    os.environ["REFINE_QUICK_AND_DIRTY"]=1
+    os.environ["CREFINE_QUICK_AND_DIRTY"]=1
+    print "Testing with QUICK_AND_DIRTY"
+
+# Lists of excluded tests for diferent archs
+EXCLUDE={}
+
+EXCLUDE["ARM_HYP"]=[
+    "Access",
+    "Bisim",
+    "DRefine",
+    "RefineOrphanage",
+    "SimplExportAndRefine"]
+
+EXCLUDE["ARM"]=[]
+
+EXCLUDE["X64"]=[
+    "Access",
+    "AutoCorresSEL4",
+    "Bisim",
+    "CamkesDarpaReport",
+    "CamkesGlueProofs",
+    "DBaseRefine",
+    "DSpec",
+    "RefineOrphanage",
+    "SepTacticsExamples",
+    "SimplExportAndRefine",
+    "AsmRefine"
+]
+
+EXCLUDE["RISCV64"]=[
+    "AInvs",
+    "ASepSpec",
+    "DSpec",
+    "c-kernel",
+    "CKernel",
+    "CSpec",
+    "CamkesDarpaReport",
+    "CamkesGlueProofs",
+    "RefineOrphanage",
+    "AsmRefine"
+]
+
+# Check EXCLUDE is exhaustive over the available architectures
+if not set(L4V_ARCH_LIST) <= set(EXCLUDE.keys()):
+    sys.exit("[INTERNAL ERROR] exclusion lists are non-exhaustive")
+
+# Run the tests from the script directory.
+os.chdir(DIR)
+
+# Arguments:
+args  = ['./misc/regression/run_tests.py']                 # Script name
+args += [r for t in EXCLUDE[L4V_ARCH] for r in ['-r', t]]  # Exclusion list
+args += sys.argv[1:]                                       # Other arguments
+
+# Run the thing!!
+os.execvp('./misc/regression/run_tests.py',args)

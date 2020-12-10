@@ -1,0 +1,315 @@
+13c13
+< theory CSepFrame
+---
+> theory CSepFrame1
+46c46
+<   exec_fatal :: "('s,'b,'c) com \<Rightarrow> ('s,'b,'c) body \<Rightarrow> 's \<Rightarrow> bool"
+---
+>   exec_fatal :: "('s,'b,'c,'e) com \<Rightarrow> ('s,'b,'c,'e) body \<Rightarrow> 's \<Rightarrow> bool"
+61c61
+<                                            
+---
+> 
+64c64
+<        s_addr set \<Rightarrow> ('s::heap_state_type','b,'c) com \<Rightarrow> ('s,'b,'c) body \<Rightarrow> bool"
+---
+>        s_addr set \<Rightarrow> ('s::heap_state_type','b,'c,'e) com \<Rightarrow> ('s,'b,'c,'e) body \<Rightarrow> bool"
+82c82
+<        ('s::heap_state_type','b,'c) com \<Rightarrow> ('s,'b,'c) body \<Rightarrow> bool"
+---
+>        ('s::heap_state_type','b,'c,'e) com \<Rightarrow> ('s,'b,'c,'e) body \<Rightarrow> bool"
+101,102c101,102
+<   mem_safe :: "('s::{heap_state_type',type},'b,'c) com \<Rightarrow>
+<                ('s,'b,'c) body \<Rightarrow> bool"
+---
+>   mem_safe :: "('s::{heap_state_type',type},'b,'c,'e) com \<Rightarrow>
+>                ('s,'b,'c,'e) body \<Rightarrow> bool"
+140a141,159
+> (* primrec intra_safe_seq :: "('s::heap_state_type','b,'c) Language.com \<Rightarrow>  bool"
+> where
+>   "intra_safe_seq Language.Skip = True"
+> | "intra_safe_seq (Language.Basic f) = (comm_restrict_safe UNIV f \<and>
+>       point_eq_mod_safe UNIV f (\<lambda>s. lift_state (hst_mem s,hst_htd s)))"
+> | "intra_safe_seq (Language.Spec r) = (\<forall>\<Gamma>. mem_safe_seq (Language.Spec r) (\<Gamma> :: ('s,'b,'c) Semantic.body))"
+> | "intra_safe_seq (Language.Seq C D) = (intra_safe_seq C \<and> intra_safe_seq D)"
+> | "intra_safe_seq (Language.Cond P C D) = (expr_htd_ind P \<and> intra_safe_seq C \<and> intra_safe_seq D)"
+> | "intra_safe_seq (Language.While P C) = (expr_htd_ind P \<and> intra_safe_seq C)"
+> | "intra_safe_seq (Language.Call p) = True"
+> | "intra_safe_seq (Language.DynCom f) = (htd_ind f \<and> (\<forall>s. intra_safe_seq (f s)))"
+> | "intra_safe_seq (Language.Guard f P C) = (mono_guard P \<and> (case C of
+>       Language.Basic g \<Rightarrow> comm_restrict_safe P g \<and> (* point_eq_mod_safe P g hst_mem \<and> *)
+> 
+>                      point_eq_mod_safe P g (\<lambda>s. lift_state (hst_mem s,hst_htd s))
+>       | _ \<Rightarrow> intra_safe_seq C))"
+> | "intra_safe_seq Language.Throw = True"
+> | "intra_safe_seq (Language.Catch C D) = (intra_safe_seq C \<and> intra_safe_seq D)" *)
+> 
+153c172
+<       Language.Basic g \<Rightarrow> comm_restrict_safe P g \<and> (*point_eq_mod_safe P g hst_mem \<and> *)
+---
+>       Language.Basic g \<Rightarrow> comm_restrict_safe P g \<and> 
+158c177
+< | "intra_safe_seq (Language.Catch C D) = (intra_safe_seq C \<and> intra_safe_seq D)"
+---
+> | "intra_safe_seq (Language.Catch C D) = (intra_safe_seq C \<and> intra_safe_seq D)" 
+160c179
+< primrec intra_safe :: "('s::heap_state_type','b,'c) com \<Rightarrow>  bool"
+---
+> primrec intra_safe :: "('s::heap_state_type','b,'c,'e) com \<Rightarrow>  bool"
+163c182
+< | "intra_safe (Basic f) = (comm_restrict_safe UNIV f \<and>
+---
+> | "intra_safe (Basic f e)  = (comm_restrict_safe UNIV f \<and>
+165c184
+< | "intra_safe (Spec r) = (\<forall>\<Gamma>. mem_safe (Spec r) (\<Gamma> :: ('s,'b,'c) body))"
+---
+> | "intra_safe (Spec r e) = (\<forall>\<Gamma>. mem_safe (Spec r e) (\<Gamma> :: ('s,'b,'c,'e) body))"
+172,173c191
+<       Basic g \<Rightarrow> comm_restrict_safe P g \<and> (*point_eq_mod_safe P g hst_mem \<and> *)
+< 
+---
+>       (Basic g e) \<Rightarrow> comm_restrict_safe P g \<and> 
+178c196
+< | "intra_safe (Await b C) = (expr_htd_ind b \<and> intra_safe_seq C)"
+---
+> | "intra_safe (Await b C e) = (expr_htd_ind b \<and> intra_safe_seq C)"
+180c198,199
+< lemma assumes 
+---
+> lemma noawaits_same_exec:
+>   assumes 
+182c201
+<   a0':"noawaits C\<^sub>p"
+---
+>    a0':"noawaits C\<^sub>p" and a2:"t\<noteq>Stuck"
+184c203
+<   using a0 a0' a1
+---
+>   using a0 a0' a1 a2
+187c206
+<   then show ?case by (cases C\<^sub>p, auto simp:SemanticCon.exec.intros)
+---
+>   then show ?case by (cases C\<^sub>p, auto simp:SemanticCon.exec.intros(1))
+190c209
+<   then show ?case by (cases C\<^sub>p, auto simp:SemanticCon.exec.intros)
+---
+>   then show ?case by (cases C\<^sub>p, auto simp:SemanticCon.exec.intros(2))
+193,196c212
+<   then show ?case by (cases C\<^sub>p, auto simp:SemanticCon.exec.intros)
+< next
+<   case (FaultProp c f)
+<   then show ?case by (cases C\<^sub>p, auto simp:SemanticCon.exec.intros)
+---
+>   then show ?case by (cases C\<^sub>p, auto simp:SemanticCon.exec.intros(3))
+199c215
+<   then show ?case by (cases C\<^sub>p, auto simp:SemanticCon.exec.intros)
+---
+>   then show ?case by (cases C\<^sub>p, auto simp:SemanticCon.exec.intros(5))
+202,205c218
+<   then show ?case by (cases C\<^sub>p, auto simp:SemanticCon.exec.intros)
+< next
+<   case (SpecStuck s r)
+<   then show ?case by (cases C\<^sub>p, auto simp:SemanticCon.exec.intros)
+---
+>   then show ?case by (cases C\<^sub>p, auto simp:SemanticCon.exec.intros(6))
+212c225,226
+<   then show ?case using Seq SemanticCon.exec.intros(8) by metis
+---
+>   then show ?case using Seq SemanticCon.exec.intros(8)
+>     by (metis SemanticCon.noStuck_start)    
+215c229
+<   then show ?case by (cases C\<^sub>p, auto simp:SemanticCon.exec.intros)
+---
+>   then show ?case by (cases C\<^sub>p, auto simp:SemanticCon.exec.intros(9))
+218c232
+<   then show ?case by (cases C\<^sub>p, auto simp:SemanticCon.exec.intros)
+---
+>   then show ?case by (cases C\<^sub>p, auto simp:SemanticCon.exec.intros(10))
+221,222c235,238
+<   then show ?case apply (cases C\<^sub>p) apply (auto simp: SemanticCon.exec.intros)
+<     by (metis SemanticCon.exec.WhileTrue WhileTrue.prems(1) WhileTrue.prems(2))
+---
+>   then show ?case 
+>     apply (cases C\<^sub>p) 
+>     apply auto
+>     by (metis SemanticCon.noStuck_start SemanticCon.exec.WhileTrue WhileTrue.prems(1) WhileTrue.prems(2))
+225c241
+<   then show ?case by (cases C\<^sub>p, auto simp:SemanticCon.exec.intros)
+---
+>   then show ?case by (cases C\<^sub>p, auto simp:SemanticCon.exec.intros(14))
+233,234c249,250
+<   ultimately show ?case using Call(3) 
+<     by (metis SemanticCon.exec.Call)
+---
+>   ultimately show ?case using Call(3) Call(6)
+>     by (simp add: SemanticCon.exec.Call) 
+239,246c255,256
+<   moreover have   " \<Gamma> p = None" 
+<     using CallUndefined lam1_seq no_await_some_some_p
+<     sorry
+<   ultimately show ?case using CallUndefined
+<     sorry
+< next
+<   case (StuckProp c)
+<   then show ?case by (cases C\<^sub>p, auto simp:SemanticCon.exec.intros)
+---
+>   then show ?case
+>     using CallUndefined.prems(3) by blast    
+249c259
+<   then show ?case by (cases C\<^sub>p, auto simp:SemanticCon.exec.intros)
+---
+>   then show ?case by (cases C\<^sub>p, auto simp:SemanticCon.exec.intros(18))
+252,255c262
+<   then show ?case by (cases C\<^sub>p, auto simp:SemanticCon.exec.intros)
+< next
+<   case (AbruptProp c s)
+<   then show ?case by (cases C\<^sub>p, auto simp:SemanticCon.exec.intros)
+---
+>   then show ?case by (cases C\<^sub>p, auto simp:SemanticCon.exec.intros(19))
+262c269,270
+<   then show ?case using CatchMatch SemanticCon.exec.intros by metis
+---
+>   then show ?case using CatchMatch SemanticCon.exec.intros(21)
+>     by (metis SemanticCon.isAbr_simps(2) SemanticCon.isAbr_simps(4))
+269c277
+<   then show ?case using CatchMiss SemanticCon.exec.intros
+---
+>   then show ?case using CatchMiss SemanticCon.exec.intros(22)
+270a279,329
+> qed(auto)
+> 
+> 
+> lemma assumes a0:"noawaits C\<^sub>p" and
+>               a1:"mem_safe C\<^sub>p \<Gamma>"
+>             shows "mem_safe_seq (sequential C\<^sub>p) \<Gamma>\<^sub>\<not>\<^sub>a" 
+> proof- 
+>   {fix s t
+>     assume a00:"\<Gamma>\<^sub>\<not>\<^sub>a \<turnstile> \<langle>(sequential C\<^sub>p),Normal s\<rangle> \<Rightarrow> t"
+>     then have "\<Gamma> \<turnstile>\<^sub>p \<langle>C\<^sub>p,Normal s\<rangle> \<Rightarrow> t" sorry
+>     have "restrict_safe_seq s t (sequential C\<^sub>p) \<Gamma>\<^sub>\<not>\<^sub>a"    
+>       sorry
+>   } then show ?thesis unfolding mem_safe_seq_def by auto
+> qed
+>   using a0 a1
+> proof(induct C\<^sub>p)
+>   case Skip then show ?case   by auto
+> then show ?case 
+> next
+>   case (Basic x)
+>   then show ?case sorry
+> next
+>   case (Spec x)
+>   then show ?case sorry
+> next
+>   case (Seq C\<^sub>p1 C\<^sub>p2)
+>   then show ?case sorry
+> next
+>   case (Cond x1 C\<^sub>p1 C\<^sub>p2)
+>   then show ?case sorry
+> next
+> case (While x1 C\<^sub>p)
+>   then show ?case sorry
+> next
+> case (Call x)
+>   then show ?case sorry
+> next
+>   case (DynCom x)
+>   then show ?case sorry
+> next
+>   case (Guard x1 x2a C\<^sub>p)
+>   then show ?case sorry
+> next
+>   case Throw
+>   then show ?case sorry
+> next
+>   case (Catch C\<^sub>p1 C\<^sub>p2)
+>   then show ?case sorry
+> next
+>   case (Await x1 x2a)
+>   then show ?case sorry
+273c332,334
+< lemma l1:"noawaits C\<^sub>p \<Longrightarrow> intra_safe C\<^sub>p \<Longrightarrow> intra_safe_seq (sequential C\<^sub>p)"
+---
+> 
+> 
+> lemma "noawaits C\<^sub>p \<Longrightarrow> intra_safe C\<^sub>p \<Longrightarrow> intra_safe_seq (sequential C\<^sub>p)"
+291,292c352
+<   then show ?case
+<     by simp
+---
+>   then show ?case sorry
+295c355
+<   then show ?case by simp
+---
+>   then show ?case sorry
+298c358
+<   then show ?case by simp
+---
+>   then show ?case sorry
+301c361
+< then show ?case by simp
+---
+> then show ?case sorry
+304,305c364
+<   then show ?case
+<     by (simp add: htd_ind_def)
+---
+>   then show ?case sorry
+307,318c366,367
+<   case (Guard x1 x2a C\<^sub>p)  
+<   then show ?case     
+<   proof (cases "\<exists>g. C\<^sub>p = Basic g")
+<     case False with Guard show ?thesis
+<       by - (clarsimp, split com.splits, auto dest: )
+<   next
+<     case True with Guard show ?thesis
+<       by (force simp: restrict_safe_def restrict_safe_OK_def
+<                                 point_eq_mod_safe_def 
+<                           intro: exec.intros
+<                           elim: exec_Normal_elim_cases)
+<   qed
+---
+>   case (Guard x1 x2a C\<^sub>p)
+>   then show ?case sorry
+321c370
+<   then show ?case by auto
+---
+>   then show ?case sorry
+324c373
+<   then show ?case by auto
+---
+>   then show ?case sorry
+327c376
+< then show ?case by auto
+---
+> then show ?case sorry
+863c912
+< lemma intra_safe_to_intra_safe_seq: assumes a0:"\<And>n C. \<Gamma> n = Some C \<Longrightarrow> intra_safe C"
+---
+> lemma assumes a0:"\<And>n C. \<Gamma> n = Some C \<Longrightarrow> intra_safe C"
+871c920
+<   ultimately show "intra_safe_seq C" using l1 by fastforce
+---
+>   ultimately show "intra_safe_seq C"
+876c925
+<       exec: "\<Gamma> \<turnstile>\<^sub>p \<langle>C,s\<rangle> \<Rightarrow> t"                      
+---
+>       exec: "\<Gamma> \<turnstile>\<^sub>p \<langle>C,s\<rangle> \<Rightarrow> t"
+971,973c1020,1021
+<   then have "\<And>n C. \<Gamma>\<^sub>p n = Some C \<Longrightarrow> intra_safe_seq C" using intra_safe_to_intra_safe_seq
+<     by (metis safe_env)
+<   then have restrict_safe_seq:"\<forall>s'. Normal s = Normal s' \<longrightarrow> intra_safe_seq ca \<longrightarrow> restrict_safe_seq s' t ca \<Gamma>\<^sub>p"
+---
+>   then have "\<And>n C. \<Gamma>\<^sub>p n = Some C \<Longrightarrow> intra_safe_seq C" sorry
+>   then have "\<forall>s'. Normal s = Normal s' \<longrightarrow> intra_safe_seq ca \<longrightarrow> restrict_safe_seq s' t ca \<Gamma>\<^sub>p"
+975,979c1023,1026
+<   then show ?case 
+<     apply (cases t)
+<     unfolding restrict_safe_def restrict_safe_OK_def exec_fatal_def exec_fatal_seq_def restrict_safe_OK_seq_def restrict_safe_seq_def
+<     apply auto
+<     by (metis (no_types, lifting) exec.intros(12) AwaitTrue.hyps(1) AwaitTrue.hyps(2) expr_htd_ind)+
+---
+>     then show ?case
+>     by (cases t)
+>        (auto simp: restrict_safe_def restrict_safe_OK_def exec_fatal_Await
+>              intro: exec.intros dest: expr_htd_ind)

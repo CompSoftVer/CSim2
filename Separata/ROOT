@@ -1,0 +1,9 @@
+chapter AFP
+
+session "Separata" (AFP) = "Sep_Algebra" +
+sessions "HOL-Eisbach"
+  theories 
+    Separata
+    Separata_Advanced
+    Separata_Pointers
+    Separata_Examples

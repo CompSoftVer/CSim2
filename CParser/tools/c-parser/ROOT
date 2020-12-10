@@ -1,0 +1,23 @@
+(*
+ * Copyright 2014, NICTA
+ *
+ * This software may be distributed and modified according to the terms of
+ * the BSD 2-Clause license. Note that NO WARRANTY is provided.
+ * See "LICENSE_BSD2.txt" for details.
+ *
+ * @TAG(NICTA_BSD)
+ *)
+
+chapter "C-Parser"
+
+session CParser = "CSimpl" +
+  sessions
+    "HOL-Library"
+    "HOL-Word"
+    "Word_Lib"
+    "Lib"
+  directories
+    "umm_heap"
+    "umm_heap/$L4V_ARCH"
+  theories
+    "CTranslation"

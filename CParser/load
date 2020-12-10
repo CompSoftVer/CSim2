@@ -1,0 +1,2 @@
+#!/bin/bash 
+L4V_ARCH=ARM isabelle jedit -d . -l $1 

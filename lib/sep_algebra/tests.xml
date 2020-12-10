@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+<!--
+     Copyright 2020, Data61, CSIRO (ABN 41 687 119 230)
+
+     SPDX-License-Identifier: BSD-2-Clause
+-->
+
+<!--
+
+     Regression Specification File
+
+     See "misc/regression/tests.xml" for a description of the file
+     format.
+
+-->
+<testsuite cpu-timeout="600">
+
+    <set depends="isabelle Lib">
+        <test name="Sep_Algebra">../../isabelle/bin/isabelle build -v -d ../.. Sep_Algebra</test>
+    </set>
+
+</testsuite>
