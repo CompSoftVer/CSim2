@@ -1,0 +1,7 @@
+#!/bin/bash
+export PATH="/usr/local/bin:/Applications/Isabelle2017.app/Isabelle/bin:$HOME/Tools/hol-kananaskis-10/bin:$PATH:$HOME/bin"
+if [ "$1" == "CSimpl" ]; then
+  isabelle jedit -d . -l CSimpl
+elif [ "$1" == "CSim" ]; then
+  isabelle jedit -d . -l CSim
+fi
